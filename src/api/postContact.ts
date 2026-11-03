@@ -1,4 +1,8 @@
-export default async function postContact(name, email, message) {
+export default async function postContact(
+  name: string,
+  email: string,
+  message: string,
+): Promise<unknown> {
   const res = await fetch("/api/contact", {
     method: "POST",
     headers: {

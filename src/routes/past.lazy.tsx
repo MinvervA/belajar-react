@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { skipToken, useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
@@ -30,16 +30,15 @@ function PastOrdersRoute() {
   const [page, setPage] = useState<number>(1);
 
   // Query untuk mengambil detail pesanan yang dipilih
-  const { data: focusedOrderData, isError: isFocusedOrderError } =
-    useQuery<PastOrderDetail>({
-      queryKey: ["past-order", focusedOrder],
-      queryFn: () => getPastOrder(focusedOrder),
-      enabled: focusedOrder !== undefined,
-      staleTime: 24 * 60 * 60 * 1000,
-    });
+  const { data: focusedOrderData, isError: isFocusedOrderError } = useQuery({
+    queryKey: ["past-order", focusedOrder],
+    queryFn: focusedOrder ? () => getPastOrder(focusedOrder) : skipToken,
+    enabled: focusedOrder !== undefined,
+    staleTime: 24 * 60 * 60 * 1000,
+  });
 
   // Query untuk mengambil daftar riwayat pesanan
-  const { isLoading, data } = useQuery<PastOrder[]>({
+  const { isLoading, data } = useQuery({
     queryKey: ["past-orders", page],
     queryFn: () => getPastOrders(page),
     staleTime: 30000,
