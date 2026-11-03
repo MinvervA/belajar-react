@@ -11,11 +11,11 @@ const intl = new Intl.NumberFormat("en-US", {
   currency: "USD",
 });
 
-export const Route = createLazyFileRoute("/Order")({
-  component: Order,
+export const Route = createLazyFileRoute("/order")({
+  component: order,
 });
 
-function Order() {
+function order() {
   const [pizzaType, setPizzaType] = useState("pepperoni");
   const [pizzaTypes, setPizzaTypes] = useState<PizzaType[]>([]);
   const [pizzaSizes, setPizzaSize] = useState<PizzaSize>("M");

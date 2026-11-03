@@ -22,6 +22,13 @@ import { StrictMode } from "react";
 // };
 
 const router = createRouter({ routeTree });
+
+declare module "@tanstack/react-router" {
+  interface Register {
+    router: typeof router;
+  }
+}
+
 const queryClient = new QueryClient();
 const App = () => {
   return (
@@ -38,5 +45,10 @@ const App = () => {
 // strictMode bertujuan memberikan extra warning dalam proses development dan juga melakukan render 2x
 
 const container = document.getElementById("root");
+
+if (!container) {
+  throw new Error("No container to render to");
+}
+
 const root = createRoot(container);
 root.render(<App />);
