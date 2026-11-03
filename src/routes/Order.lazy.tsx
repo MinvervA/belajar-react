@@ -4,6 +4,7 @@ import { CartContext } from "../contexts";
 
 import { Pizza } from "../Pizza";
 import { Cart } from "../Cart";
+import type { Pizza as PizzaType, PizzaSize } from "../APIResponseType";
 
 const intl = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -16,8 +17,8 @@ export const Route = createLazyFileRoute("/Order")({
 
 function Order() {
   const [pizzaType, setPizzaType] = useState("pepperoni");
-  const [pizzaTypes, setPizzaTypes] = useState([]);
-  const [pizzaSizes, setPizzaSize] = useState("M");
+  const [pizzaTypes, setPizzaTypes] = useState<PizzaType[]>([]);
+  const [pizzaSizes, setPizzaSize] = useState<PizzaSize>("M");
   const [loading, setLoading] = useState(true);
   const [cart, setCart] = useContext(CartContext);
 
@@ -30,19 +31,20 @@ function Order() {
   //   }
   // }
 
-  let price, selectedPizza;
+  let price: string | undefined;
+  let selectedPizza: PizzaType | undefined;
   if (!loading) {
     selectedPizza = pizzaTypes.find((pizza) => pizzaType === pizza.id);
-    price = intl.format(
-      selectedPizza.sizes ? selectedPizza.sizes[pizzaSizes] : "",
-    );
+    price = selectedPizza
+      ? intl.format(selectedPizza.sizes[pizzaSizes])
+      : undefined;
   }
 
   async function fetchPizzaTypes() {
     await new Promise((res) => setTimeout(res, 3000));
 
     const response = await fetch("/api/pizzas");
-    const parsedJson = await response.json();
+    const parsedJson = (await response.json()) as PizzaType[];
     setPizzaTypes(parsedJson);
     setLoading(false);
   }
@@ -65,7 +67,7 @@ function Order() {
   }
 
   useEffect(() => {
-    fetchPizzaTypes();
+    void fetchPizzaTypes();
   }, []);
 
   return (
@@ -75,6 +77,10 @@ function Order() {
         action=""
         onSubmit={(e) => {
           e.preventDefault();
+
+          if (!selectedPizza || !price) {
+            return;
+          }
           setCart([...cart, { pizza: selectedPizza, size: pizzaSizes, price }]);
         }}
       >
@@ -102,7 +108,7 @@ function Order() {
             <div className="">
               <span>
                 <input
-                  onChange={(e) => setPizzaSize(e.target.value)}
+                  onChange={(e) => setPizzaSize(e.target.value as PizzaSize)}
                   checked={pizzaSizes === "S"}
                   type="radio"
                   id="pizza-s"
@@ -113,7 +119,7 @@ function Order() {
               </span>
               <span>
                 <input
-                  onChange={(e) => setPizzaSize(e.target.value)}
+                  onChange={(e) => setPizzaSize(e.target.value as PizzaSize)}
                   type="radio"
                   checked={pizzaSizes === "M"}
                   id="pizza-m"
@@ -124,7 +130,7 @@ function Order() {
               </span>
               <span>
                 <input
-                  onChange={(e) => setPizzaSize(e.target.value)}
+                  onChange={(e) => setPizzaSize(e.target.value as PizzaSize)}
                   type="radio"
                   checked={pizzaSizes === "L"}
                   id="pizza-l"
@@ -137,7 +143,7 @@ function Order() {
           </div>
           <button type="submit">Add to cart</button>
         </div>
-        {loading ? (
+        {loading || !selectedPizza ? (
           <h3>Sedang memuat...</h3>
         ) : (
           <div className="order-pizza">
