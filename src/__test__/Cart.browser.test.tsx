@@ -62,6 +62,7 @@ test("snapshot with some stuff in cart", () => {
           price: "$12.75",
         },
       ]}
+      checkout={() => {}}
     />,
   );
   expect(asFragment()).toMatchSnapshot();

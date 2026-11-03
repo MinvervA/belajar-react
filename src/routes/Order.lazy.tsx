@@ -159,7 +159,7 @@ function order() {
       {loading ? (
         <h2>Sedang memuat...</h2>
       ) : (
-        <Cart cart={cart} checkout={checkout} />
+        <Cart cart={cart} checkout={() => void checkout()} />
       )}
     </div>
   );

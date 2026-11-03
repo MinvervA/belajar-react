@@ -29,8 +29,8 @@ function getPizzaOfTheDay() {
   return pizza;
 }
 
-test("gives null when first called", async () => {
-  fetch.mockResponseOnce(JSON.stringify(testPizza));
+test("gives null when first called", () => {
+  fetchMocker.mockResponseOnce(JSON.stringify(testPizza));
   const pizza = getPizzaOfTheDay();
   expect(pizza).toBeNull();
 });

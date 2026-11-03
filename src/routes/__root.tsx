@@ -4,12 +4,12 @@ import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 import Header from "../Header";
 import { useState } from "react";
-import { CartContext } from "../contexts";
+import { CartContext, type CartItem } from "../contexts";
 import PizzaOfTheDay from "../PizzaOfTheDay";
 
 export const Route = createRootRoute({
   component: () => {
-    const cartHook = useState([]);
+    const cartHook = useState<CartItem[]>([]);
     return (
       <>
         <CartContext.Provider value={cartHook}>

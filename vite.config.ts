@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 
@@ -15,11 +15,19 @@ export default defineConfig({
       },
     },
   },
+
   plugins: [TanStackRouterVite(), react()],
-  // test: {
-  //   environment: "happy-dom",
-  // },
-  coverage: {
-    reporter: ["text", "json", "html"],
+
+  test: {
+    coverage: {
+      provider: "istanbul",
+      reporter: ["text", "html"],
+      exclude: [
+        "src/routeTree.gen.ts",
+        "coverage/**",
+        "dist/**",
+        "**/*.test.{js,jsx,ts,tsx}",
+      ],
+    },
   },
 });
