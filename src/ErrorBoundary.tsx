@@ -1,13 +1,13 @@
 import { Link } from "@tanstack/react-router";
-import { Component } from "react";
+import { Component, type ErrorInfo, type ReactNode } from "react";
 
-class ErrorBoundary extends Component {
+class ErrorBoundary extends Component<{ children: ReactNode }> {
   state = { hasError: false };
   static getDerivedStateFromError() {
     return { hasError: true };
   }
 
-  componentDidCatch(error, info) {
+  componentDidCatch(error: Error, info: ErrorInfo) {
     console.error("Error Boundary menangkap error", error, info);
   }
 
