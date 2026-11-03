@@ -1,10 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
+
 import getPastOrders from "../api/getPastOrders";
-import Modal from "../Modal";
 import getPastOrder from "../api/getPastOrder";
+import Modal from "../Modal";
 import ErrorBoundary from "../ErrorBoundary";
+import type { PastOrder, PastOrderDetail } from "../APIResponseType";
 
 export const Route = createLazyFileRoute("/past")({
   component: ErrorBoundaryWrappedPastOrdersRoute,
@@ -24,22 +26,20 @@ const intl = Intl.NumberFormat("en-US", {
 });
 
 function PastOrdersRoute() {
-  const [focusedOrder, setFocusedOrder] = useState();
+  const [focusedOrder, setFocusedOrder] = useState<number>();
+  const [page, setPage] = useState<number>(1);
 
-  //   throw new Error("");
-
-  const [page, setPage] = useState(1);
-
-  const { isLoading: isLoadingFocusedOrder, data: focusedOrderData } = useQuery(
-    {
+  // Query untuk mengambil detail pesanan yang dipilih
+  const { data: focusedOrderData, isError: isFocusedOrderError } =
+    useQuery<PastOrderDetail>({
       queryKey: ["past-order", focusedOrder],
       queryFn: () => getPastOrder(focusedOrder),
-      enabled: !!focusedOrder,
+      enabled: focusedOrder !== undefined,
       staleTime: 24 * 60 * 60 * 1000,
-    },
-  );
+    });
 
-  const { isLoading, data } = useQuery({
+  // Query untuk mengambil daftar riwayat pesanan
+  const { isLoading, data } = useQuery<PastOrder[]>({
     queryKey: ["past-orders", page],
     queryFn: () => getPastOrders(page),
     staleTime: 30000,
@@ -48,9 +48,14 @@ function PastOrdersRoute() {
   if (isLoading) {
     return (
       <div className="past-orders">
-        <h2>sedang memuat...</h2>
+        <h2>Sedang memuat...</h2>
       </div>
     );
+  }
+
+  // Loading selesai tidak menjamin data tersedia
+  if (!data) {
+    throw new Error("Past orders could not be loaded");
   }
 
   return (
@@ -58,11 +63,12 @@ function PastOrdersRoute() {
       <table>
         <thead>
           <tr>
-            <td>ID</td>
-            <td>Data</td>
-            <td>Time</td>
+            <th>ID</th>
+            <th>Date</th>
+            <th>Time</th>
           </tr>
         </thead>
+
         <tbody>
           {data.map((order) => (
             <tr key={order.order_id}>
@@ -71,41 +77,48 @@ function PastOrdersRoute() {
                   {order.order_id}
                 </button>
               </td>
+
               <td>{order.date}</td>
               <td>{order.time}</td>
             </tr>
           ))}
         </tbody>
       </table>
+
       <div className="pages">
         <button disabled={page <= 1} onClick={() => setPage(page - 1)}>
           Previous
         </button>
-        <div className="">{page}</div>
+
+        <div>{page}</div>
+
         <button disabled={data.length < 10} onClick={() => setPage(page + 1)}>
           Next
         </button>
       </div>
-      {focusedOrder ? (
+
+      {focusedOrder !== undefined ? (
         <Modal>
           <h2>Order # {focusedOrder}</h2>
-          {!isLoadingFocusedOrder ? (
+
+          {focusedOrderData ? (
             <table>
               <thead>
                 <tr>
-                  <td>Image</td>
-                  <td>Name</td>
-                  <td>Size</td>
-                  <td>Quantity</td>
-                  <td>Price</td>
-                  <td>Total</td>
+                  <th>Image</th>
+                  <th>Name</th>
+                  <th>Size</th>
+                  <th>Quantity</th>
+                  <th>Price</th>
+                  <th>Total</th>
                 </tr>
               </thead>
+
               <tbody>
-                {focusedOrderData?.orderItems.map((pizza) => (
-                  <tr key={`${pizza.pizzaTypeId}_${pizza.name}`}>
+                {focusedOrderData.orderItems.map((pizza, index) => (
+                  <tr key={`${pizza.pizzaTypeId}_${pizza.size}_${index}`}>
                     <td>
-                      <img src={pizza.image} alt={pizza} />
+                      <img src={pizza.image} alt={pizza.name} />
                     </td>
                     <td>{pizza.name}</td>
                     <td>{pizza.size}</td>
@@ -116,9 +129,13 @@ function PastOrdersRoute() {
                 ))}
               </tbody>
             </table>
+          ) : isFocusedOrderError ? (
+            <p>Gagal memuat detail pesanan.</p>
           ) : (
-            <p>Sedang memuat ...</p>
+            <p>Sedang memuat...</p>
           )}
+
+          <button onClick={() => setFocusedOrder(undefined)}>Close</button>
         </Modal>
       ) : null}
     </div>
