@@ -1,9 +1,9 @@
-import { useContext } from "react";
-import { CartContext } from "./contexts";
+import { useAppSelector } from "./hooks";
+import { selectCartCount } from "./features/cartSlice";
 import { Link } from "@tanstack/react-router";
 
 export default function Header() {
-  const [cart] = useContext(CartContext);
+  const cartCount = useAppSelector(selectCartCount);
   return (
     <nav className="grid w-full grid-cols-[minmax(0,1fr)_auto] items-center border-b border-border px-4 sm:grid-cols-[1fr_3fr_1fr]">
       <Link
@@ -21,7 +21,7 @@ export default function Header() {
       <div className="flex items-center justify-center text-[40px]">
         🛒{" "}
         <span className="relative -top-[17px] -left-[17px] flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary px-0.5 text-[18px] text-white">
-          {cart.length}
+          {cartCount}
         </span>
       </div>
     </nav>

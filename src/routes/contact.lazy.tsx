@@ -1,6 +1,5 @@
-import { useMutation } from "@tanstack/react-query";
 import { createLazyFileRoute } from "@tanstack/react-router";
-import postContact from "../api/postContact";
+import { usePostContactMutation } from "../api/pizzaApi";
 import type { SubmitEvent } from "react";
 
 export const Route = createLazyFileRoute("/contact")({
@@ -14,17 +13,17 @@ function ContactRoute() {
     return typeof value === "string" ? value : "";
   }
 
-  const mutation = useMutation({
-    mutationFn: function (e: SubmitEvent<HTMLFormElement>) {
-      e.preventDefault();
-      const formData = new FormData(e.target);
-      return postContact(
-        getString(formData, "name"),
-        getString(formData, "email"),
-        getString(formData, "message"),
-      );
-    },
-  });
+  const [postContact, mutation] = usePostContactMutation();
+  function submit(e: SubmitEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (mutation.isLoading) return;
+    const formData = new FormData(e.currentTarget);
+    void postContact({
+      name: getString(formData, "name"),
+      email: getString(formData, "email"),
+      message: getString(formData, "message"),
+    });
+  }
 
   return (
     <div className="px-4">
@@ -36,7 +35,7 @@ function ContactRoute() {
       ) : (
         <form
           action=""
-          onSubmit={mutation.mutate}
+          onSubmit={submit}
           className="flex flex-col items-center"
         >
           <label htmlFor="contact-name" className="sr-only">
@@ -68,7 +67,12 @@ function ContactRoute() {
             placeholder="Message"
             id="contact-message"
           ></textarea>
-          <button className="btn">Submit</button>
+          {mutation.isError && (
+            <p role="alert">Pesan gagal dikirim. Silakan coba lagi.</p>
+          )}
+          <button className="btn" disabled={mutation.isLoading}>
+            Submit
+          </button>
         </form>
       )}
     </div>

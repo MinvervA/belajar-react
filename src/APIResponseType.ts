@@ -31,3 +31,9 @@ export interface PastOrderDetail {
   order: PastOrder & { total: number };
   orderItems: PastOrderItem[];
 }
+
+export interface CartItem {
+  pizza: Pizza;
+  size: PizzaSize;
+  price: string;
+}

@@ -1,9 +1,8 @@
-import { skipToken, useQuery } from "@tanstack/react-query";
+import { skipToken } from "@reduxjs/toolkit/query";
 import { createLazyFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
-import getPastOrders from "../api/getPastOrders";
-import getPastOrder from "../api/getPastOrder";
+import { useGetPastOrdersQuery, useGetPastOrderQuery } from "../api/pizzaApi";
 import Modal from "../Modal";
 import ErrorBoundary from "../ErrorBoundary";
 
@@ -28,22 +27,20 @@ function PastOrdersRoute() {
   const [focusedOrder, setFocusedOrder] = useState<number>();
   const [page, setPage] = useState<number>(1);
 
-  // Query untuk mengambil detail pesanan yang dipilih
-  const { data: focusedOrderData, isError: isFocusedOrderError } = useQuery({
-    queryKey: ["past-order", focusedOrder],
-    queryFn: focusedOrder ? () => getPastOrder(focusedOrder) : skipToken,
-    enabled: focusedOrder !== undefined,
-    staleTime: 24 * 60 * 60 * 1000,
+  const { currentData: focusedOrderData, isError: isFocusedOrderError } =
+    useGetPastOrderQuery(focusedOrder ?? skipToken, {
+      refetchOnMountOrArgChange: 24 * 60 * 60,
+    });
+  // currentData prevents old page rows appearing under the new page number.
+  const {
+    currentData: data,
+    isFetching,
+    isError,
+  } = useGetPastOrdersQuery(page, {
+    refetchOnMountOrArgChange: 30,
   });
 
-  // Query untuk mengambil daftar riwayat pesanan
-  const { isLoading, data } = useQuery({
-    queryKey: ["past-orders", page],
-    queryFn: () => getPastOrders(page),
-    staleTime: 30000,
-  });
-
-  if (isLoading) {
+  if (!data && isFetching) {
     return (
       <div className="mx-auto min-h-[650px] w-[90%] max-w-[900px]">
         <h2>Sedang memuat...</h2>
@@ -52,7 +49,7 @@ function PastOrdersRoute() {
   }
   // let databaru = false;
   // Loading selesai tidak menjamin data tersedia
-  if (!data) {
+  if (isError || !data) {
     throw new Error("Past orders could not be loaded");
   }
 

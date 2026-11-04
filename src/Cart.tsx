@@ -1,4 +1,4 @@
-import type { CartItem } from "./contexts";
+import type { CartItem } from "./APIResponseType";
 
 const intl = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -8,9 +8,10 @@ const intl = new Intl.NumberFormat("en-US", {
 interface Props {
   cart: CartItem[];
   checkout: () => void;
+  isCheckingOut?: boolean;
 }
 
-export const Cart = ({ cart, checkout }: Props) => {
+export const Cart = ({ cart, checkout, isCheckingOut = false }: Props) => {
   let total = 0;
 
   for (let i = 0; i < cart.length; i++) {
@@ -31,7 +32,12 @@ export const Cart = ({ cart, checkout }: Props) => {
         ))}
       </ul>
       <p className="my-[15px]">Total Price: {intl.format(total)}</p>
-      <button onClick={checkout} className="btn">
+      <button
+        onClick={checkout}
+        className="btn"
+        disabled={isCheckingOut}
+        aria-busy={isCheckingOut || undefined}
+      >
         Checkout
       </button>
     </div>

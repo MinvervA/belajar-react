@@ -1,7 +1,8 @@
 import { createRoot } from "react-dom/client";
 import { routeTree } from "./routeTree.gen";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Provider } from "react-redux";
+import { makeStore } from "./store";
 import { StrictMode } from "react";
 import "./index.css";
 // const App = () => {
@@ -30,14 +31,14 @@ declare module "@tanstack/react-router" {
   }
 }
 
-const queryClient = new QueryClient();
+const store = makeStore();
 const App = () => {
   return (
     <div>
       <StrictMode>
-        <QueryClientProvider client={queryClient}>
+        <Provider store={store}>
           <RouterProvider router={router} />
-        </QueryClientProvider>
+        </Provider>
       </StrictMode>
     </div>
   );

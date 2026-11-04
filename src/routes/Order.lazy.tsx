@@ -1,10 +1,17 @@
-import { useContext, useEffect, useState } from "react";
 import { createLazyFileRoute } from "@tanstack/react-router";
-import { CartContext } from "../contexts";
+import { useAppDispatch, useAppSelector } from "../hooks";
+import { addToCart, clearCart, selectCart } from "../features/cartSlice";
+import {
+  selectPizzaType,
+  selectPizzaSize,
+  setPizzaType,
+  setPizzaSize,
+} from "../features/orderSlice";
+import { useGetPizzasQuery, usePlaceOrderMutation } from "../api/pizzaApi";
 
 import { Pizza } from "../Pizza";
 import { Cart } from "../Cart";
-import type { Pizza as PizzaType, PizzaSize } from "../APIResponseType";
+import type { PizzaSize } from "../APIResponseType";
 
 const intl = new Intl.NumberFormat("en-US", {
   style: "currency",
@@ -12,63 +19,31 @@ const intl = new Intl.NumberFormat("en-US", {
 });
 
 export const Route = createLazyFileRoute("/order")({
-  component: order,
+  component: Order,
 });
 
-function order() {
-  const [pizzaType, setPizzaType] = useState("pepperoni");
-  const [pizzaTypes, setPizzaTypes] = useState<PizzaType[]>([]);
-  const [pizzaSizes, setPizzaSize] = useState<PizzaSize>("M");
-  const [loading, setLoading] = useState(true);
-  const [cart, setCart] = useContext(CartContext);
-
-  // const fetchPizzaType = async() =>{
-  //   try {
-  //     const response = await fetch
-  //   } catch (error) {
-  //     console.log(error);
-
-  //   }
-  // }
-
-  let price: string | undefined;
-  let selectedPizza: PizzaType | undefined;
-  if (!loading) {
-    selectedPizza = pizzaTypes.find((pizza) => pizzaType === pizza.id);
-    price = selectedPizza
-      ? intl.format(selectedPizza.sizes[pizzaSizes])
-      : undefined;
-  }
-
-  async function fetchPizzaTypes() {
-    await new Promise((res) => setTimeout(res, 3000));
-
-    const response = await fetch("/api/pizzas");
-    const parsedJson = (await response.json()) as PizzaType[];
-    setPizzaTypes(parsedJson);
-    setLoading(false);
-  }
+function Order() {
+  const dispatch = useAppDispatch();
+  const pizzaType = useAppSelector(selectPizzaType);
+  const pizzaSizes = useAppSelector(selectPizzaSize);
+  const cart = useAppSelector(selectCart);
+  const {
+    data: pizzaTypes = [],
+    isLoading: loading,
+    isError,
+  } = useGetPizzasQuery();
+  const [placeOrder, { isLoading: isCheckingOut, isError: checkoutError }] =
+    usePlaceOrderMutation();
+  const selectedPizza = pizzaTypes.find((pizza) => pizza.id === pizzaType);
+  const price = selectedPizza
+    ? intl.format(selectedPizza.sizes[pizzaSizes])
+    : undefined;
 
   async function checkout() {
-    setLoading(true);
-
-    await fetch("/api/order", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        cart,
-      }),
-    });
-
-    setCart([]);
-    setLoading(false);
+    if (isCheckingOut) return;
+    const result = await placeOrder({ cart });
+    if (!result.error) dispatch(clearCart());
   }
-
-  useEffect(() => {
-    void fetchPizzaTypes();
-  }, []);
 
   return (
     <div className="mx-auto w-full max-w-[1300px] px-4">
@@ -80,13 +55,12 @@ function order() {
           onSubmit={(e) => {
             e.preventDefault();
 
-            if (!selectedPizza || !price) {
+            if (!selectedPizza || !price || isCheckingOut) {
               return;
             }
-            setCart([
-              ...cart,
-              { pizza: selectedPizza, size: pizzaSizes, price },
-            ]);
+            dispatch(
+              addToCart({ pizza: selectedPizza, size: pizzaSizes, price }),
+            );
           }}
         >
           <div className="min-w-0 w-full border-b border-border p-[15px] text-center sm:border-r sm:border-b-0">
@@ -102,7 +76,7 @@ function order() {
                 value={pizzaType}
                 id="pizzaType"
                 className="form-select mb-[30px] block w-full p-[5px] text-[16px]"
-                onChange={(e) => setPizzaType(e.target.value)}
+                onChange={(e) => dispatch(setPizzaType(e.target.value))}
               >
                 {/* <option value="pepperoni">Pepperoni</option>
               <option value="hawaiian">Hawaiian</option>
@@ -128,7 +102,9 @@ function order() {
               >
                 <span className="inline-block">
                   <input
-                    onChange={(e) => setPizzaSize(e.target.value as PizzaSize)}
+                    onChange={(e) =>
+                      dispatch(setPizzaSize(e.target.value as PizzaSize))
+                    }
                     checked={pizzaSizes === "S"}
                     type="radio"
                     id="pizza-s"
@@ -156,7 +132,9 @@ function order() {
                 </span>
                 <span>
                   <input
-                    onChange={(e) => setPizzaSize(e.target.value as PizzaSize)}
+                    onChange={(e) =>
+                      dispatch(setPizzaSize(e.target.value as PizzaSize))
+                    }
                     type="radio"
                     checked={pizzaSizes === "M"}
                     id="pizza-m"
@@ -184,7 +162,9 @@ function order() {
                 </span>
                 <span>
                   <input
-                    onChange={(e) => setPizzaSize(e.target.value as PizzaSize)}
+                    onChange={(e) =>
+                      dispatch(setPizzaSize(e.target.value as PizzaSize))
+                    }
                     type="radio"
                     checked={pizzaSizes === "L"}
                     id="pizza-l"
@@ -212,11 +192,17 @@ function order() {
                 </span>
               </div>
             </div>
-            <button type="submit" className="btn">
+            <button
+              type="submit"
+              className="btn"
+              disabled={loading || !selectedPizza || isCheckingOut}
+            >
               Add to cart
             </button>
           </div>
-          {loading || !selectedPizza ? (
+          {isError ? (
+            <p role="alert">Gagal memuat pizza. Silakan coba lagi.</p>
+          ) : loading || !selectedPizza ? (
             <h3>Sedang memuat...</h3>
           ) : (
             <div className="min-w-0 w-full p-[15px] text-center">
@@ -230,10 +216,19 @@ function order() {
           )}
         </form>
         <div className="min-w-0 h-full">
+          {checkoutError && (
+            <p role="alert">
+              Checkout gagal. Keranjang tetap tersimpan; silakan coba lagi.
+            </p>
+          )}
           {loading ? (
             <h2>Sedang memuat...</h2>
           ) : (
-            <Cart cart={cart} checkout={() => void checkout()} />
+            <Cart
+              cart={cart}
+              checkout={() => void checkout()}
+              isCheckingOut={isCheckingOut}
+            />
           )}
         </div>
       </div>
