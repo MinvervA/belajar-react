@@ -3,7 +3,7 @@
 exports[`snapshot with some stuff in cart 1`] = `
 <DocumentFragment>
   <div
-    class="border-l border-border p-[15px] text-center leading-normal"
+    class="border-t border-border lg:border-t-0 lg:border-l p-[15px] text-center leading-normal h-full"
   >
     <h2>
       Cart

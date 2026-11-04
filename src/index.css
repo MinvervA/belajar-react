@@ -1,9 +1,37 @@
-@layer theme, base, legacy, components, utilities;
+@import "tailwindcss";
 
-@import "tailwindcss/theme.css" layer(theme);
-@import "tailwindcss/utilities.css" layer(utilities);
+@font-face {
+  font-family: Pacifico;
+  src: url("/public/Pacifico-Regular.ttf");
+  font-display: swap;
+}
 
-@import "./legacy.css" layer(legacy);
+@layer base {
+  body {
+    font-family: Arial, sans-serif;
+    background-color: var(--color-background);
+  }
+
+  h2 {
+    @apply text-center font-pacifico text-[32px] font-normal text-primary sm:text-[40px];
+  }
+
+  h2::after {
+    content: "";
+    @apply ml-[25px] hidden h-[30px] w-[150px] sm:inline-block;
+    background: conic-gradient(
+      transparent 90deg,
+      var(--color-primary) 90deg 180deg,
+      transparent 180deg 270deg,
+      var(--color-primary) 270deg
+    );
+    background-size: 30px 30px;
+  }
+
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary;
+  }
+}
 
 @theme {
   --color-primary: #da2f04;

@@ -19,7 +19,7 @@ export const Cart = ({ cart, checkout }: Props) => {
   }
 
   return (
-    <div className="border-l border-border p-[15px] text-center leading-normal h-full">
+    <div className="border-t border-border lg:border-t-0 lg:border-l p-[15px] text-center leading-normal h-full">
       <h2>Cart</h2>
       <ul>
         {cart.map((item, index) => (

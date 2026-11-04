@@ -27,31 +27,46 @@ function ContactRoute() {
   });
 
   return (
-    <div className="contact">
+    <div className="px-4">
       <h2>Contact</h2>
       {mutation.isSuccess ? (
         <h3 className="m-[50px] text-center font-pacifico text-[30px] font-normal text-secondary">
           Terkirim!
         </h3>
       ) : (
-        <form action="" onSubmit={mutation.mutate}>
+        <form
+          action=""
+          onSubmit={mutation.mutate}
+          className="flex flex-col items-center"
+        >
+          <label htmlFor="contact-name" className="sr-only">
+            Name
+          </label>
           <input
+            id="contact-name"
             type="text"
             name="name"
             placeholder="Name"
             className="form-input w-[500px] max-w-full rounded-[5px] border-2 border-border p-2 my-[15px] focus:border-primary focus-visible:outline-2 focus-visible:outline-primary disabled:bg-[#999]"
           />
+          <label htmlFor="contact-email" className="sr-only">
+            Email
+          </label>
           <input
+            id="contact-email"
             type="email"
             name="email"
             placeholder="Email"
             className="form-input w-[500px] max-w-full rounded-[5px] border-2 border-border p-2 my-[15px] focus:border-primary focus-visible:outline-2 focus-visible:outline-primary disabled:bg-[#999]"
           />
+          <label htmlFor="contact-message" className="sr-only">
+            Message
+          </label>
           <textarea
             className="form-input w-[500px] max-w-full rounded-[5px] border-2 border-border p-2 my-[15px] focus:border-primary focus-visible:outline-2 focus-visible:outline-primary disabled:bg-[#999] min-h-[200px]"
             name="message"
             placeholder="Message"
-            id=""
+            id="contact-message"
           ></textarea>
           <button className="btn">Submit</button>
         </form>

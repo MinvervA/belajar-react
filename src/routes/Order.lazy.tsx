@@ -71,12 +71,12 @@ function order() {
   }, []);
 
   return (
-    <div className="ml-[5%] w-full mx-auto w-full max-w-[1300px] px-4">
+    <div className="mx-auto w-full max-w-[1300px] px-4">
       <h2>Create Order</h2>
       <div className="grid grid-cols-1 gap-[50px] lg:grid-cols-[2fr_1fr]">
         <form
           action=""
-          className="flex justify-center"
+          className="grid min-w-0 grid-cols-1 gap-6 sm:grid-cols-2"
           onSubmit={(e) => {
             e.preventDefault();
 
@@ -89,7 +89,7 @@ function order() {
             ]);
           }}
         >
-          <div className="w-full border-r border-border p-[15px]">
+          <div className="min-w-0 w-full border-b border-border p-[15px] text-center sm:border-r sm:border-b-0">
             <div className="my-[10px] text-center">
               <label
                 htmlFor="pizzaType"
@@ -101,7 +101,7 @@ function order() {
                 name="pizzaType"
                 value={pizzaType}
                 id="pizzaType"
-                className="form-select mb-[30px] block w-full p-[5px] text-[16x]"
+                className="form-select mb-[30px] block w-full p-[5px] text-[16px]"
                 onChange={(e) => setPizzaType(e.target.value)}
               >
                 {/* <option value="pepperoni">Pepperoni</option>
@@ -115,10 +115,17 @@ function order() {
               </select>
             </div>
             <div className="my-[10px] text-center">
-              <label className="mb-[10px] block text-[20px] text-secondary">
+              <p
+                id="pizza-size-label"
+                className="mb-[10px] block text-[20px] text-secondary"
+              >
                 Pizza Size :
-              </label>
-              <div className="my-[10px] text-center">
+              </p>
+              <div
+                role="radiogroup"
+                aria-labelledby="pizza-size-label"
+                className="my-[10px] flex flex-wrap justify-center gap-2 text-center"
+              >
                 <span className="inline-block">
                   <input
                     onChange={(e) => setPizzaSize(e.target.value as PizzaSize)}
@@ -132,7 +139,7 @@ function order() {
                   <label
                     htmlFor="pizza-s"
                     className="
-                      mx-[15px] mb-[10px]
+                      mb-[10px]
                       inline-flex h-20 w-20 cursor-pointer
                       items-center justify-center
                       rounded-[5px] border border-[#999]
@@ -160,7 +167,7 @@ function order() {
                   <label
                     htmlFor="pizza-m"
                     className="
-                      mx-[15px] mb-[10px]
+                      mb-[10px]
                       inline-flex h-20 w-20 cursor-pointer
                       items-center justify-center
                       rounded-[5px] border border-[#999]
@@ -188,7 +195,7 @@ function order() {
                   <label
                     htmlFor="pizza-l"
                     className="
-                      mx-[15px] mb-[10px]
+                      mb-[10px]
                       inline-flex h-20 w-20 cursor-pointer
                       items-center justify-center
                       rounded-[5px] border border-[#999]
@@ -212,7 +219,7 @@ function order() {
           {loading || !selectedPizza ? (
             <h3>Sedang memuat...</h3>
           ) : (
-            <div className="ml-[25px] w-full">
+            <div className="min-w-0 w-full p-[15px] text-center">
               <Pizza
                 name={selectedPizza.name}
                 description={selectedPizza.description}
