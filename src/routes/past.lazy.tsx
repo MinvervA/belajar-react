@@ -50,7 +50,7 @@ function PastOrdersRoute() {
       </div>
     );
   }
-
+  // let databaru = false;
   // Loading selesai tidak menjamin data tersedia
   if (!data) {
     throw new Error("Past orders could not be loaded");

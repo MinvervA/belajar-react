@@ -14,10 +14,13 @@ class ErrorBoundary extends Component<{ children: ReactNode }> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="error-boundary">
+        <div className="min-h-[400px] text-center">
           <h2>Waduh!</h2>
           <p>
-            Telah terjadi Error pada list ini <Link to={"/"}>Click disini</Link>{" "}
+            Telah terjadi Error pada list ini{" "}
+            <Link className="text-primary underline hover:opacity-80" to={"/"}>
+              Click disini
+            </Link>{" "}
             untuk kembali ke beranda
           </p>
         </div>

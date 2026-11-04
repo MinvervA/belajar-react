@@ -3,7 +3,7 @@
 exports[`snapshot with some stuff in cart 1`] = `
 <DocumentFragment>
   <div
-    class="cart"
+    class="border-l border-border p-[15px] text-center leading-normal"
   >
     <h2>
       Cart
@@ -61,10 +61,14 @@ exports[`snapshot with some stuff in cart 1`] = `
         </span>
       </li>
     </ul>
-    <p>
+    <p
+      class="my-[15px]"
+    >
       Total Price: $46.00
     </p>
-    <button>
+    <button
+      class="btn"
+    >
       Checkout
     </button>
   </div>

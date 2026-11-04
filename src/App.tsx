@@ -3,6 +3,7 @@ import { routeTree } from "./routeTree.gen";
 import { createRouter, RouterProvider } from "@tanstack/react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { StrictMode } from "react";
+import "./index.css";
 // const App = () => {
 //   return React.createElement("div", {}, [
 //     React.createElement("h1", {}, "Hello World!"),

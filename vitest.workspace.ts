@@ -19,6 +19,7 @@ export default defineWorkspace([
         provider: "playwright",
         enabled: true,
         name: "chromium",
+        headless: true,
       },
     },
   },

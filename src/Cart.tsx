@@ -5,12 +5,12 @@ const intl = new Intl.NumberFormat("en-US", {
   currency: "USD",
 });
 
-interface Props{
+interface Props {
   cart: CartItem[];
-  checkout: ()=>void;
+  checkout: () => void;
 }
 
-export const Cart = ({ cart, checkout }:Props) => {
+export const Cart = ({ cart, checkout }: Props) => {
   let total = 0;
 
   for (let i = 0; i < cart.length; i++) {
@@ -19,7 +19,7 @@ export const Cart = ({ cart, checkout }:Props) => {
   }
 
   return (
-    <div className="cart">
+    <div className="border-l border-border p-[15px] text-center leading-normal h-full">
       <h2>Cart</h2>
       <ul>
         {cart.map((item, index) => (
@@ -30,8 +30,10 @@ export const Cart = ({ cart, checkout }:Props) => {
           </li>
         ))}
       </ul>
-      <p>Total Price: {intl.format(total)}</p>
-      <button onClick={checkout}>Checkout</button>
+      <p className="my-[15px]">Total Price: {intl.format(total)}</p>
+      <button onClick={checkout} className="btn">
+        Checkout
+      </button>
     </div>
   );
 };

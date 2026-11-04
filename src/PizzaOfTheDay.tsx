@@ -13,10 +13,10 @@ export default function PizzaOfTheDay() {
   }
 
   return (
-    <div className="pizza-of-the-day">
+    <div className="border-t border-border mt-[50px] w-full ">
       <h2>Pizza of the day</h2>
-      <div>
-        <div className="pizza-of-the-day-info">
+      <div className="flex justify-center items-center">
+        <div className="mr-[30px] leading-[2] text-center">
           <h3>{pizzaOfTheDay.name}</h3>
           <p>{pizzaOfTheDay.description}</p>
           <p className="pizza-of-the-day-price">
@@ -26,7 +26,7 @@ export default function PizzaOfTheDay() {
         <img
           src={pizzaOfTheDay.image}
           alt={pizzaOfTheDay.name}
-          className="pizza-of-the-day-image"
+          className="max-w-[200px] rounded-[5px] border border-border"
         />
       </div>
     </div>

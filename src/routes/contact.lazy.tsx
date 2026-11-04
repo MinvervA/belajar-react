@@ -30,13 +30,30 @@ function ContactRoute() {
     <div className="contact">
       <h2>Contact</h2>
       {mutation.isSuccess ? (
-        <h3>Terkirim!</h3>
+        <h3 className="m-[50px] text-center font-pacifico text-[30px] font-normal text-secondary">
+          Terkirim!
+        </h3>
       ) : (
         <form action="" onSubmit={mutation.mutate}>
-          <input type="text" name="name" placeholder="Name" />
-          <input type="email" name="email" placeholder="Email" />
-          <textarea name="message" placeholder="Message" id=""></textarea>
-          <button>Submit</button>
+          <input
+            type="text"
+            name="name"
+            placeholder="Name"
+            className="form-input w-[500px] max-w-full rounded-[5px] border-2 border-border p-2 my-[15px] focus:border-primary focus-visible:outline-2 focus-visible:outline-primary disabled:bg-[#999]"
+          />
+          <input
+            type="email"
+            name="email"
+            placeholder="Email"
+            className="form-input w-[500px] max-w-full rounded-[5px] border-2 border-border p-2 my-[15px] focus:border-primary focus-visible:outline-2 focus-visible:outline-primary disabled:bg-[#999]"
+          />
+          <textarea
+            className="form-input w-[500px] max-w-full rounded-[5px] border-2 border-border p-2 my-[15px] focus:border-primary focus-visible:outline-2 focus-visible:outline-primary disabled:bg-[#999] min-h-[200px]"
+            name="message"
+            placeholder="Message"
+            id=""
+          ></textarea>
+          <button className="btn">Submit</button>
         </form>
       )}
     </div>
